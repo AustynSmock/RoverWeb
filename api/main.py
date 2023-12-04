@@ -38,10 +38,10 @@ class UserForm(FlaskForm):
   email = StringField("Email", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
-class Login(FlaskForm):
+class LoginForm(FlaskForm):
   email = StringField("Email", validators=[DataRequired()])
   password = StringField("Password", validators=[DataRequired()])
-  submit = SubmitField("Login")
+  login = SubmitField("Login")
 
 class NameForm(FlaskForm):
 	name = StringField("What's Your Name", validators=[DataRequired()])
@@ -67,7 +67,7 @@ def add_user():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   password = None
-  form = UserForm()
+  form = LoginForm()
   if form.validate_on_submit():
     user = Users.query.filter_by(email=form.email.data).first()
     if user is None:
