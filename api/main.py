@@ -38,6 +38,11 @@ class UserForm(FlaskForm):
   email = StringField("Email", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
+class Login(FlaskForm):
+  email = StringField("Email", validators=[DataRequired()])
+  password = StringField("Password", validators=[DataRequired()])
+  submit = SubmitField("Login")
+
 class NameForm(FlaskForm):
 	name = StringField("What's Your Name", validators=[DataRequired()])
 	submit = SubmitField("Submit")
