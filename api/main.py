@@ -48,8 +48,8 @@ def add_user():
     user = Users.query.filter_by(email=form.email.data).first()
     if user is None:
       user = Users(name=form.name.data, email=form.email.data)
-      db.session.add(user)
-      db.session.commit()
+      #db.session.add(user)
+      #db.session.commit()
     name = form.name.data
     form.name.data = ''
     form.email.data = ''
