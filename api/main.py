@@ -20,7 +20,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + database_path
 app.config['SECRET_KEY'] = "my super secret key"
 
 db = SQLAlchemy(app)
-#app.app_context().push()
+app.app_context().push()
+db.create_all()
 
 class Users(db.Model):
   id = db.Column(db.Integer, primary_key=True)
