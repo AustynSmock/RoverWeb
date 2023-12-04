@@ -60,7 +60,7 @@ def add_user():
   return render_template("add_user.html", form=form, name=name)
 
 @app.route('/login', methods=['GET', 'POST'])
-def add_user():
+def login():
   password = None
   form = UserForm()
   if form.validate_on_submit():
