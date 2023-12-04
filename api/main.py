@@ -59,6 +59,23 @@ def add_user():
   our_users = Users.query.order_by(Users.date_added)
   return render_template("add_user.html", form=form, name=name)
 
+@app.route('/login', methods=['GET', 'POST'])
+def add_user():
+  password = None
+  form = UserForm()
+  if form.validate_on_submit():
+    user = Users.query.filter_by(email=form.email.data).first()
+    if user is None:
+      user = Users(name=form.name.data, email=form.email.data)
+      #db.session.add(user)
+      #db.session.commit()
+    password = form.password.data
+    form.password.data = ''
+    form.email.data = ''
+    flash("User Added Successfully!")
+  our_users = Users.query.order_by(Users.date_added)
+  return render_template("add_user.html", form=form, password=password)
+
 @app.route('/')
 def index():
   first_name = "Rowdy"
