@@ -66,7 +66,7 @@ def add_user():
   if form.validate_on_submit():
     user = Users.query.filter_by(email=form.email.data).first()
     if user is None:
-      user = Users(name=form.name.data, email=form.email.data)
+      user = Users(password=form.password.data, email=form.email.data)
       #db.session.add(user)
       #db.session.commit()
     password = form.password.data
