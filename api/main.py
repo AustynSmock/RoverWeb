@@ -2,13 +2,14 @@ from collections import UserString
 from flask import Flask, render_template, flash, request, redirect, url_for, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from werkzeug.utils import secure_filename
 from wtforms.validators import DataRequired, Regexp, ValidationError
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
+from werkzeug.utils import secure_filename
+from flask import send_from_directory
 import uuid
 import os
 
@@ -145,33 +146,49 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
-#@app.route('/user/<name>/data', methods=['POST', 'GET'])
+@app.route('/user/<name>/data', methods=['POST', 'GET'])
+def handle_data(name):
+  uploaded_file = request.files['textFile']
+  files = request.files['file']
+  return render_template("data.html", files=uploaded_file, name=name), 200
 
-
-@app.route('/upload', methods=['POST', 'GET'])
+@app.route('/get-upload', methods=['GET'])
+def get_file():
+  # Fetch the most recent file entry from the database
+  most_recent_file = db.uploads.find_one(sort=[("date_created", -1)])
+  if most_recent_file:
+    filename = most_recent_file['filename']
+    # Provide the path to the file and the filename to send it
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+  else:
+    return 'No files found', 404
+  
+@app.route('/upload', methods=['POST', 'GET', 'PUT'])
 def handle_data():
-    if request.method == 'POST':
-        if 'file' in request.files:
-          file = request.files['file']
-          # Do something with the file, such as saving it to disk or processing it
-          db.uploads.insert_one({
-              "file" : file,
-             "date_created" : datetime.utcnow()
-            })
-          return 'File uploaded successfully', 200
-
-    # Handle other HTTP methods (GET, POST) as needed
-    if request.method == 'PUT':
-      if 'file' in request.files:
-          file = request.files['file']
-          # Do something with the file, such as saving it to disk or processing it
-          db.uploads.insert_one({
-              "file" : file,
-             "date_created" : datetime.utcnow()
-            })
-          return 'File uploaded successfully', 200
-    # For demonstration purposes, we'll return a message for other methods
-    return request.method, 600
+  if request.method in ['POST', 'PUT']:
+    # Check if the post request has the file part
+    if 'file' not in request.files:
+      flash('No file part')
+      return redirect(request.url)
+    file = request.files['file']
+    # If the user does not select a file, the browser submits an
+    # empty file without a filename.
+    if file.filename == '':
+      flash('No selected file')
+      return redirect(request.url)
+    if file:
+      # Secure the filename before using it
+      filename = secure_filename(file.filename)
+      # Save the file to the uploads folder
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      # You can now store the filename in the database
+      db.uploads.insert_one({
+          "filename": filename,
+          "date_created": datetime.utcnow()
+      })
+      return 'File uploaded successfully', 200
+  # For demonstration purposes, return a message for other methods
+  return request.method, 600
 
 #Error Pages
 @app.errorhandler(404)
