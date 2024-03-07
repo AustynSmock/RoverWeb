@@ -2,16 +2,16 @@ from collections import UserString
 from flask import Flask, render_template, flash, request, redirect, url_for, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
+from werkzeug.utils import secure_filename
 from wtforms.validators import DataRequired, Regexp, ValidationError
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
-from werkzeug.utils import secure_filename
-from flask import send_from_directory
 import uuid
 import os
+from flask import send_from_directory
 
 app = Flask(__name__)
 
@@ -146,11 +146,7 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
-@app.route('/user/<name>/data', methods=['POST', 'GET'])
-def handle_data(name):
-  uploaded_file = request.files['textFile']
-  files = request.files['file']
-  return render_template("data.html", files=uploaded_file, name=name), 200
+#@app.route('/user/<name>/data', methods=['POST', 'GET'])
 
 @app.route('/get-upload', methods=['GET'])
 def get_file():
@@ -162,7 +158,7 @@ def get_file():
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
   else:
     return 'No files found', 404
-  
+
 @app.route('/upload', methods=['POST', 'GET', 'PUT'])
 def handle_data():
   if request.method in ['POST', 'PUT']:
@@ -190,6 +186,7 @@ def handle_data():
   # For demonstration purposes, return a message for other methods
   return request.method, 600
 
+
 #Error Pages
 @app.errorhandler(404)
 def page_not_found(e):
@@ -213,4 +210,3 @@ def name():
 @app.route('/potree')
 def potree_viewer():
   return render_template('potree_viewer.html')
-
