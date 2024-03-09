@@ -161,6 +161,9 @@ def get_file():
 
 @app.route('/upload', methods=['POST', 'GET', 'PUT'])
 def handle_data():
+  if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
   if request.method in ['POST', 'PUT']:
     # Check if the post request has the file part
     if 'file' not in request.files:
@@ -179,8 +182,8 @@ def handle_data():
       file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
       # You can now store the filename in the database
       db.uploads.insert_one({
-          "filename": filename,
-          "date_created": datetime.utcnow()
+        "filename": filename,
+        "date_created": datetime.utcnow()
       })
       return 'File uploaded successfully', 200
   # For demonstration purposes, return a message for other methods
