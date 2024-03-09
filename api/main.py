@@ -168,41 +168,35 @@ def handle_data():
     flash('You need to log in first.')
     return redirect(url_for('login'))
 
-  if request.method == 'GET':
-    # Fetch the most recent file entry from the database for the logged-in user
-    most_recent_file = db.uploads.find_one({'user_id': session['user']['_id']}, sort=[("date_created", -1)])
-
-    if most_recent_file:
-      grid_out = fs.get(most_recent_file['_id'])
-      return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
-    else:
-      return 'No files found for the user', 404
-
-  elif request.method in ['POST', 'PUT']:
-    # Check if the post request has the file part
+  if request.method in ['POST', 'PUT']:
     if 'file' not in request.files:
       flash('No file part')
       return redirect(request.url)
+
     file = request.files['file']
-    # If the user does not select a file, the browser submits an empty file without a filename.
     if file.filename == '':
       flash('No selected file')
       return redirect(request.url)
+
     if file:
       filename = secure_filename(file.filename)
       file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-      file.save(file_path)
+      file.save(file_path)  # Save the file to the filesystem
 
-      # Associate the file with the logged-in user and store it in the database
+      # Now, instead of trying to store the FileStorage object, store the file's metadata
       db.uploads.insert_one({
         "user_id": session['user']['_id'],
         "filename": filename,
         "filepath": file_path,
+        "content_type": file.content_type,
         "date_created": datetime.utcnow()
       })
       return 'File uploaded successfully', 200
 
-  # For demonstration purposes, return a message for other methods
+  elif request.method == 'GET':
+    # Your logic for handling GET requests
+    pass
+
   return 'Unsupported method', 405
 
 #Error Pages
