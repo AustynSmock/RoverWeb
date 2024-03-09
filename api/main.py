@@ -1,5 +1,5 @@
 from collections import UserString
-from flask import Flask, render_template, flash, request, redirect, url_for, session
+from flask import Flask, render_template, flash, request, redirect, url_for, session, send_file
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from werkzeug.utils import secure_filename
@@ -9,6 +9,7 @@ from datetime import datetime
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
+from gridfs import GridFS
 import uuid
 import os
 from flask import send_from_directory
@@ -22,8 +23,10 @@ app.config['MONGO_URI'] = 'mongodb+srv://rowdyrover:5LoCaB1aMpVCxsso@cluster0.np
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 
+
 #setup mongodb
 mongodb_client = PyMongo(app)
+fs = GridFS(mongodb_client.db)
 
 db = mongodb_client.db
 
@@ -146,49 +149,92 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
-#@app.route('/user/<name>/data', methods=['POST', 'GET'])
+@app.route('/user/<name>/data', methods=['POST', 'GET'])
+
+# @app.route('/get-upload', methods=['GET'])
+# def get_file():
+#   # Fetch the most recent file entry from the database
+#   most_recent_file = db.uploads.find_one(sort=[("date_created", -1)])
+#   if most_recent_file:
+#     filename = most_recent_file['filename']
+#     # Provide the path to the file and the filename to send it
+#     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+#   else:
+#     return 'No files found', 404
+  
+
+@app.route('/get-upload', methods=['GET'])
+def get_file():
+    if 'logged_in' not in session or 'username' not in session:
+      flash("You need to log in first.")
+      return redirect(url_for('login'))
+
+    name = session['name']
+    
+    # Fetch the most recent file entry from the database for the logged-in user
+    most_recent_file = db.uploads.find_one({'name': name}, sort=[("date_created", -1)])
+
+    if most_recent_file:
+      grid_out = fs.get(most_recent_file['_id'])
+      return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
+    else:
+      return 'No files found for the user', 404
+
 
 @app.route('/get-upload', methods=['GET'])
 def get_file():
   # Fetch the most recent file entry from the database
   most_recent_file = db.uploads.find_one(sort=[("date_created", -1)])
+
   if most_recent_file:
-    filename = most_recent_file['filename']
-    # Provide the path to the file and the filename to send it
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    grid_out = fs.get(most_recent_file['_id'])
+    return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
   else:
     return 'No files found', 404
 
+
 @app.route('/upload', methods=['POST', 'GET', 'PUT'])
 def handle_data():
-  if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+  if 'logged_in' not in session or 'user' not in session:
+    flash('You need to log in first.')
+    return redirect(url_for('login'))
 
-  if request.method in ['POST', 'PUT']:
+  if request.method == 'GET':
+    # Fetch the most recent file entry from the database for the logged-in user
+    most_recent_file = db.uploads.find_one({'user_id': session['user']['_id']}, sort=[("date_created", -1)])
+
+    if most_recent_file:
+      grid_out = fs.get(most_recent_file['_id'])
+      return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
+    else:
+      return 'No files found for the user', 404
+
+  elif request.method in ['POST', 'PUT']:
     # Check if the post request has the file part
     if 'file' not in request.files:
       flash('No file part')
       return redirect(request.url)
     file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
+    # If the user does not select a file, the browser submits an empty file without a filename.
     if file.filename == '':
       flash('No selected file')
       return redirect(request.url)
     if file:
-      # Secure the filename before using it
       filename = secure_filename(file.filename)
-      # Save the file to the uploads folder
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-      # You can now store the filename in the database
+      file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+      file.save(file_path)
+
+      # Associate the file with the logged-in user and store it in the database
       db.uploads.insert_one({
+        "user_id": session['user']['_id'],
         "filename": filename,
+        "filepath": file_path,
         "date_created": datetime.utcnow()
       })
       return 'File uploaded successfully', 200
-  # For demonstration purposes, return a message for other methods
-  return request.method, 600
 
+  # For demonstration purposes, return a message for other methods
+  return 'Unsupported method', 405
 
 #Error Pages
 @app.errorhandler(404)
