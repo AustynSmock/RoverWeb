@@ -161,37 +161,6 @@ def user(name):
 #     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 #   else:
 #     return 'No files found', 404
-  
-
-@app.route('/get-upload', methods=['GET'])
-def get_file():
-    if 'logged_in' not in session or 'username' not in session:
-      flash("You need to log in first.")
-      return redirect(url_for('login'))
-
-    name = session['name']
-    
-    # Fetch the most recent file entry from the database for the logged-in user
-    most_recent_file = db.uploads.find_one({'name': name}, sort=[("date_created", -1)])
-
-    if most_recent_file:
-      grid_out = fs.get(most_recent_file['_id'])
-      return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
-    else:
-      return 'No files found for the user', 404
-
-
-@app.route('/get-upload', methods=['GET'])
-def get_file():
-  # Fetch the most recent file entry from the database
-  most_recent_file = db.uploads.find_one(sort=[("date_created", -1)])
-
-  if most_recent_file:
-    grid_out = fs.get(most_recent_file['_id'])
-    return send_file(grid_out, attachment_filename=most_recent_file['filename'], as_attachment=True)
-  else:
-    return 'No files found', 404
-
 
 @app.route('/upload', methods=['POST', 'GET', 'PUT'])
 def handle_data():
