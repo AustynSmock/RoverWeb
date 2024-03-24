@@ -149,7 +149,25 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
-@app.route('/user/<name>/data', methods=['POST', 'GET'])
+@app.route('/view-data')
+def view_data():
+  if 'user' in session:
+    user_id = session['user']['_id']
+    file_data = db.uploads.find_one({"user_id": user_id})
+
+    if file_data:
+      file_path = file_data['filepath']
+      with open(file_path, 'r') as file:
+          file_content = file.read()
+      return render_template("data.html", file_content=file_content)
+    else:
+      flash("No file uploaded for this user.")
+      return redirect(url_for('user', name=session['user']['name']))
+  else:
+    flash("You need to log in first.")
+    return redirect(url_for('login'))
+
+#@app.route('/user/<name>/data', methods=['POST', 'GET'])
 
 # @app.route('/get-upload', methods=['GET'])
 # def get_file():
@@ -162,42 +180,40 @@ def user(name):
 #   else:
 #     return 'No files found', 404
 
-@app.route('/upload', methods=['POST', 'GET', 'PUT'])
-def handle_data():
-  if 'logged_in' not in session or 'user' not in session:
+@app.route('/upload', methods=['POST'])
+def handle_upload():
+  if 'user' not in session:
     flash('You need to log in first.')
     return redirect(url_for('login'))
 
-  if request.method in ['POST', 'PUT']:
-    if 'file' not in request.files:
-      flash('No file part')
-      return redirect(request.url)
+  if 'file' not in request.files:
+    flash('No file part')
+    return redirect(request.url)
 
-    file = request.files['file']
-    if file.filename == '':
-      flash('No selected file')
-      return redirect(request.url)
+  file = request.files['file']
+  if file.filename == '':
+    flash('No selected file')
+    return redirect(request.url)
 
-    if file:
-      filename = secure_filename(file.filename)
-      file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-      file.save(file_path)  # Save the file to the filesystem
+  if file:
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(file_path)  # Save the file to the filesystem
 
-      # Now, instead of trying to store the FileStorage object, store the file's metadata
-      db.uploads.insert_one({
-        "user_id": session['user']['_id'],
-        "filename": filename,
-        "filepath": file_path,
-        "content_type": file.content_type,
-        "date_created": datetime.utcnow()
-      })
-      return 'File uploaded successfully', 200
+    # Associate the uploaded file with the logged-in user
+    user_id = session['user']['_id']
 
-  elif request.method == 'GET':
-    # Your logic for handling GET requests
-    pass
+    # Store the file's metadata in the database
+    db.uploads.insert_one({
+      "user_id": user_id,
+      "filename": filename,
+      "filepath": file_path,
+      "content_type": file.content_type,
+      "date_uploaded": datetime.utcnow()
+    })
 
-  return 'Unsupported method', 405
+    flash('File uploaded successfully.')
+    return redirect(url_for('user', name=session['user']['name']))
 
 #Error Pages
 @app.errorhandler(404)
