@@ -162,7 +162,7 @@ def view_data(name):
       return render_template("data.html", file_content=file_content)
     else:
       flash("No file uploaded for this user.")
-      #return redirect(url_for('user', name=name))
+      return redirect(url_for('user', name=name))
   else:
     flash("You need to log in first.")
     return redirect(url_for('login'))
