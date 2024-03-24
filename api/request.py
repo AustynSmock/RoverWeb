@@ -2,7 +2,7 @@ import requests
 
 # Endpoint URLs
 login_url = 'https://roverweb-86ddt01ec-austyn-smocks-projects.vercel.app/user/login'
-upload_url = 'http://127.0.0.1:5000/upload'
+upload_url = 'https://www.rowdy-rover.com/upload'
 
 # User credentials
 login_credentials = {
@@ -10,7 +10,7 @@ login_credentials = {
     "password": "rover"
 }
 
-file_path = 'temp.txt'
+file_path = 'api/temp.txt'
 
 # Start a session to persist login state
 with requests.Session() as session:
