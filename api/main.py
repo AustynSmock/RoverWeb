@@ -150,8 +150,8 @@ def user(name):
     return redirect(url_for('login'))
 
 @app.route('/user/<name>/view-data')
-def view_data():
-  if 'user' in session:
+def view_data(name):
+  if 'user' in session and session['user']['name'] == name:
     user_id = session['user']['_id']
     file_data = db.uploads.find_one({"user_id": user_id})
 
@@ -162,10 +162,11 @@ def view_data():
       return render_template("data.html", file_content=file_content)
     else:
       flash("No file uploaded for this user.")
-      return redirect(url_for('user', name=session['user']['name']))
+      return redirect(url_for('user', name=name))
   else:
     flash("You need to log in first.")
     return redirect(url_for('login'))
+
 
 
 #@app.route('/user/<name>/data', methods=['POST', 'GET'])
