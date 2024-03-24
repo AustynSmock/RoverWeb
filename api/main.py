@@ -149,7 +149,7 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
-@app.route('/view-data')
+@app.route('/user/<name>/view-data')
 def view_data():
   if 'user' in session:
     user_id = session['user']['_id']
