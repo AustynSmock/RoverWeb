@@ -167,6 +167,7 @@ def view_data():
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
+
 #@app.route('/user/<name>/data', methods=['POST', 'GET'])
 
 # @app.route('/get-upload', methods=['GET'])
