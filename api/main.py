@@ -158,7 +158,7 @@ def view_data():
     if file_data:
       file_path = file_data['filepath']
       with open(file_path, 'r') as file:
-          file_content = file.read()
+        file_content = file.read()
       return render_template("data.html", file_content=file_content)
     else:
       flash("No file uploaded for this user.")
