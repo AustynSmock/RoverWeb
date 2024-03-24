@@ -1,16 +1,16 @@
 import requests
 
 # Endpoint URLs
-login_url = 'https://roverweb-86ddt01ec-austyn-smocks-projects.vercel.app//user/login'
+login_url = 'https://roverweb-86ddt01ec-austyn-smocks-projects.vercel.app/user/login'
 upload_url = 'http://127.0.0.1:5000/upload'
 
 # User credentials
 login_credentials = {
-    "name": "xxxxxx",
-    "password": "xxxxxx"
+    "name": "rover",
+    "password": "rover"
 }
 
-file_path = 'rarar.txt'
+file_path = 'temp.txt'
 
 # Start a session to persist login state
 with requests.Session() as session:
@@ -25,6 +25,8 @@ with requests.Session() as session:
         try:
             with open(file_path, 'rb') as file:
                 files = {'file': (file_path, file, 'text/plain')}
+                
+                # Include user credentials with the upload request
                 response = session.post(upload_url, files=files)
 
                 if response.status_code == 200:
