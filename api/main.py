@@ -206,7 +206,7 @@ def handle_upload():
 
   if file:
     filename = secure_filename(file.filename)
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file_path = os.path.join(app.config['api/UPLOAD_FOLDER'], filename)
     file.save(file_path)  # Save the file to the filesystem
 
     # Associate the uploaded file with the logged-in user
