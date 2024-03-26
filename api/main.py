@@ -149,6 +149,8 @@ def user(name):
     flash("You need to log in first.")
     return redirect(url_for('login'))
 
+import os
+
 @app.route('/user/<name>/view-data')
 def view_data(name):
   if 'user' in session and session['user']['name'] == name:
@@ -157,15 +159,20 @@ def view_data(name):
 
     if file_data:
       file_path = file_data['filepath']
-      with open(file_path, 'r') as file:
-        file_content = file.read()
-      return render_template("data.html", file_content=file_content)
+      if os.path.exists(file_path):  # Check if file exists
+        with open(file_path, 'r') as file:
+          file_content = file.read()
+        return render_template("data.html", file_content=file_content)
+      else:
+        flash("File not found on the server.")
+        return redirect(url_for('user', name=name))
     else:
       flash("No file uploaded for this user.")
       return redirect(url_for('user', name=name))
   else:
     flash("You need to log in first.")
     return redirect(url_for('login'))
+
 
 
 
