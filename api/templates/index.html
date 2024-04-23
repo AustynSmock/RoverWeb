@@ -2,10 +2,15 @@
 
 {% block content %}
 
-    <h1> Rowdy Rover </h1>
-    <br/>
-    <img src="{{ url_for('static', filename='images/RaspberryPi_Tank.png')}}" width=100% class="rounded float-end">
-    <br/><br/>
-    <h3> Austyn Smock, Nathan Lancaster, and Aidan Pantoya</h3>
+    <div class="row">
+        <div class="col-md-8">
+            <h1> Rowdy Rover </h1>
+            <br/>
+            <h3> Austyn Smock, Nathan Lancaster, and Aidan Pantoya</h3>
+        </div>
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='images/RaspberryPi_Tank.png')}}" width=100% class="rounded">
+        </div>
+    </div>
 
 {% endblock %}
