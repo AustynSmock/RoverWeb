@@ -167,8 +167,8 @@ def view_data(name):
         flash("File not found on the server.")
         return redirect(url_for('user', name=name))
     else:
-      flash("No file uploaded for this user.")
-      return redirect(url_for('user', name=name))
+        flash("No file uploaded for this user.")
+        return redirect(url_for('user', name=name))
   else:
     flash("You need to log in first.")
     return redirect(url_for('login'))
@@ -206,7 +206,7 @@ def handle_upload():
 
   if file:
     filename = secure_filename(file.filename)
-    file_path = os.path.join(app.config['api/UPLOAD_FOLDER'], filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)  # Save the file to the filesystem
 
     # Associate the uploaded file with the logged-in user
