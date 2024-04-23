@@ -247,3 +247,7 @@ def name():
 @app.route('/potree')
 def potree_viewer():
   return render_template('potree_viewer.html')
+
+@app.route('/about')
+def about():
+  return render_template("about.html")
