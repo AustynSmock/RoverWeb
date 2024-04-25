@@ -1,8 +1,32 @@
 {% extends 'base.html' %}
 
+{% block title %}About Us{% endblock %}
+
 {% block content %}
-
-<h1> Our Purpose </h1>    
-<h3> We aim to give our users a 3D model, floor map, and a Virtual-Reality perspective of the inside of a structure. </h3>
-
+<div class="container">
+    <h1 class="mt-5 mb-4">About Us</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Our Team</h2>
+            <ul>
+                <li><strong>Austyn Smock</strong> - Lead Developer</li>
+                <li><strong>Nathan Lancaster</strong> - Robotics Engineer</li>
+                <li><strong>Aidan Pantoya</strong> - Project Manager</li>
+            </ul>
+            <h2>Contact Information</h2>
+            <p>Email: ANAProject24@gmail.com</p>
+            <h2>Project Description</h2>
+            <p>The purpose of our rover is to provide users with a 3D model, floor map, and Virtual-Reality perspective of the inside of a structure. This is made possible through three methods:</p>
+            <ol>
+                <li>SLAM navigation</li>
+                <li>Computer Vision path/lane navigation</li>
+                <li>Manual navigation</li>
+            </ol>
+            <p>The rover collects map data that is simultaneously uploaded and updated to a web user interface. Users can create an account through the web UI to connect to the rover, view and download map data, and control the rover.</p>
+        </div>
+        <div class="col-md-6">
+            <!-- You can add an image or any additional content here if needed -->
+        </div>
+    </div>
+</div>
 {% endblock %}
