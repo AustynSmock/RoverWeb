@@ -2,14 +2,16 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12 text-center">
-        <img src="{{ url_for('static', filename='images/RaspberryPi_Tank.png')}}" class="img-fluid mb-4" alt="Rowdy Rover Image">
-        <h1 class="mt-4 mb-3">Rowdy Rover</h1>
+    <div class="col-md-12">
+        <h1 class="mt-5 mb-4">Rowdy Rover</h1>
         <p>Welcome to Rowdy Rover, your guide to building and controlling a rover for autonomous mapping!</p>
         <p>Rowdy Rover is a project created by Austyn Smock, Nathan Lancaster, and Aidan Pantoya, designed to help you build and program a rover capable of mapping rooms or buildings autonomously.</p>
+        <!--<p>Whether you're a robotics enthusiast, a student working on a project, or a hobbyist looking for a new challenge, Rowdy Rover provides step-by-step instructions to help you explore the exciting world of autonomous navigation and mapping.</p>-->
         <a href="/howto" class="btn btn-primary">Get Started</a>
+    </div>
+    <div class="col-md-6">
+        <img src="{{ url_for('static', filename='images/RaspberryPi_Tank.png')}}" class="img-fluid rounded" alt="Rowdy Rover Image">
     </div>
 </div>
 {% endblock %}
-
 
