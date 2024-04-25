@@ -189,7 +189,7 @@ def view_data(name):
 #   else:
 #     return 'No files found', 404
 
-"""@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def handle_upload():
   if 'user' not in session:
     flash('You need to log in first.')
@@ -222,27 +222,7 @@ def handle_upload():
     })
 
     flash('File uploaded successfully.')
-    return redirect(url_for('user', name=session['user']['name']))"""
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-  if request.method == 'POST':
-    # Check if the POST request has the file part
-    if 'file' not in request.files:
-      flash('No file part')
-      return redirect(request.url)
-    file = request.files['file']
-    # If the user does not select a file, the browser submits an empty file without a filename
-    if file.filename == '':
-      flash('No selected file')
-      return redirect(request.url)
-    if file:
-      # Save the file to the uploads folder
-      filename = secure_filename(file.filename)
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-      flash('File uploaded successfully')
-      return redirect(url_for('potree_viewer', filename=filename))
-  return render_template('upload.html')
+    return redirect(url_for('user', name=session['user']['name']))
 
 #Error Pages
 @app.errorhandler(404)
