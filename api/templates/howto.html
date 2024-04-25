@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Rover Control Tutorial</h1>
+    <ol>
+        <li class="mb-2">Acquire Yahboom G1-Tank and Raspberry Pi 4B</li>
+        <li class="mb-2">Assemble G1-Tank with Raspberry Pi</li>
+        <li class="mb-2">Follow guide exactly to install Ubuntu, ROS, and RealSense: <a href="https://ramith.fyi/setting-up-raspberry-pi-4-with-ubuntu-20-04-ros-intel-realsense/" class="text-decoration-none">Setting up Raspberry Pi 4 with Ubuntu 20.04, ROS, Intel RealSense</a></li>
+        <li class="mb-2">Install <code>ros1-legacy</code> branch from <a href="https://github.com/IntelRealSense/realsense-ros" class="text-decoration-none">Intel RealSense GitHub</a></li>
+        <li class="mb-2">Download RealVNC Server</li>
+        <li class="mb-2">Connect Raspberry Pi to RealVNC account and connect to Wi-Fi</li>
+        <li class="mb-2">Download the RowdyNav Folder from GitHub: <a href="https://github.com/aidan-pantoya/RowdyRover/tree/main/RowdyNav" class="text-decoration-none">RowdyNav GitHub Repository</a></li>
+        <li class="mb-2">Ensure OpenCV and Ultralytics are installed: <code>pip install opencv-python ultralytics</code></li>
+        <li class="mb-2">cd into RowdyNav folder</li>
+        <li class="mb-2">Run the command: <code>python3 control.py</code></li>
+        <li class="mb-2">In a new terminal, run <code>source /opt/ros/noetic/setup.bash</code></li>
+        <li class="mb-2">In the same terminal, run <code>roscore</code></li>
+        <li class="mb-2">In a new terminal (keep the previous one open), run <code>source /opt/ros/noetic/setup.bash</code></li>
+        <li class="mb-2">In the same terminal, run <code>roslaunch realsense2_camera opensource_tracking.launch</code></li>
+        <li class="mb-2">Follow <code>control.py</code> instructions for navigation and control</li>
+    </ol>
+</div>
+{% endblock %}
