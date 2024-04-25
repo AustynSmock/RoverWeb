@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Map Display{% endblock %}
+{% block title %}Potree Viewer{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mt-5 mb-4">Map Display</h1>
-    <iframe src="https://mypointclouds.s3.amazonaws.com/outputFolder/PointCloud.html" width="100%" height="800px" frameborder="0"></iframe>
-</div>
+    <h1>Potree Viewer</h1>
+    <div id="potreeContainer" style="width: 100%; height: 600px;"></div>
+    <script>
+        var viewer = new Potree.Viewer(document.getElementById("potreeContainer"));
+        viewer.setEDLEnabled(true);
+        viewer.setFOV(60);
+        viewer.setPointBudget(1 * 1000 * 1000);
+        viewer.loadPotreeLayer("{{ url_for('static', filename='uploads/' + filename) }}");
+    </script>
 {% endblock %}
